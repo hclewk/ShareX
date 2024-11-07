@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -34,6 +34,9 @@ namespace ShareX.ScreenCaptureLib
     {
         public const int MaximumCenterPointCount = 5;
         private const int MinimumCollisionSize = 10;
+        private const int MinimumLineWidth = 1;
+        private const int MaximumLineWidth = 100;
+        private const int LineWidthScrollIncrement = 2;
 
         public override ShapeType ShapeType { get; } = ShapeType.DrawingLine;
 
@@ -251,6 +254,19 @@ namespace ShareX.ScreenCaptureLib
                 {
                     Manager.ResizeNodes[i].Visible = !Manager.ResizeNodes[i].Rectangle.IntersectsWith(Manager.ResizeNodes[Points.Length - 1].Rectangle);
                 }
+            }
+        }
+
+        public override void OnMouseWheel(int delta)
+        {
+            // Only adjust line width if we're drawing or the shape is selected
+            if (Manager.IsCreating || Manager.IsMoving || Manager.IsResizing)
+            {
+                // Calculate new border size based on scroll direction
+                int newBorderSize = BorderSize + (delta > 0 ? LineWidthScrollIncrement : -LineWidthScrollIncrement);
+                
+                // Clamp the value between minimum and maximum
+                BorderSize = Math.Max(MinimumLineWidth, Math.Min(MaximumLineWidth, newBorderSize));
             }
         }
     }
