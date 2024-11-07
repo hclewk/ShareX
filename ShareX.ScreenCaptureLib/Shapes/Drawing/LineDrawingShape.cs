@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -251,6 +251,23 @@ namespace ShareX.ScreenCaptureLib
                 {
                     Manager.ResizeNodes[i].Visible = !Manager.ResizeNodes[i].Rectangle.IntersectsWith(Manager.ResizeNodes[Points.Length - 1].Rectangle);
                 }
+            }
+        }
+        public override void OnMouseWheel(bool forward)
+        {
+            if (Manager.IsMoving || Manager.IsCreating) return;
+
+            const int minBorderSize = 1;
+            const int maxBorderSize = 100;
+            const int increment = 2;
+
+            if (forward)
+            {
+                BorderSize = Math.Min(BorderSize + increment, maxBorderSize);
+            }
+            else
+            {
+                BorderSize = Math.Max(BorderSize - increment, minBorderSize);
             }
         }
     }
