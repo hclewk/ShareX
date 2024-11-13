@@ -1,4 +1,4 @@
-﻿#region License Information (GPL v3)
+#region License Information (GPL v3)
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
@@ -34,6 +34,9 @@ namespace ShareX.ScreenCaptureLib
     {
         public const int MaximumCenterPointCount = 5;
         private const int MinimumCollisionSize = 10;
+        private const int MinLineWidth = 1;
+        private const int MaxLineWidth = 100;
+        private const int LineWidthDelta = 2;
 
         public override ShapeType ShapeType { get; } = ShapeType.DrawingLine;
 
@@ -113,6 +116,30 @@ namespace ShareX.ScreenCaptureLib
                 AutoPositionCenterPoints();
                 CalculateRectangle();
             }
+        }
+
+        public override bool HandleMouseWheel(int delta)
+        {
+            // Only handle mouse wheel if we're creating the shape or it's selected
+            if (Manager.IsCreating || Manager.IsMoving || Manager.IsResizing)
+            {
+                // Calculate new border size based on wheel delta
+                int newBorderSize = BorderSize;
+                if (delta > 0)
+                {
+                    newBorderSize += LineWidthDelta;
+                }
+                else
+                {
+                    newBorderSize -= LineWidthDelta;
+                }
+
+                // Clamp the border size between min and max values
+                BorderSize = Math.Max(MinLineWidth, Math.Min(MaxLineWidth, newBorderSize));
+                return true;
+            }
+
+            return false;
         }
 
         private void CalculateRectangle()
